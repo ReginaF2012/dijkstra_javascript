@@ -18,9 +18,11 @@ class Graph {
 
     }
 }
-class MaxHeap {
-    constructor() {
+
+class PriorityQueue {
+    constructor(array = []) {
         this.values = [];
+        if (array.length > 0) this.buildHeap(array);
     }
 
     // index of the parent node
@@ -60,27 +62,27 @@ class MaxHeap {
             let leftChildIndex = this.leftChild(index),
                 rightChildIndex = this.rightChild(index),
 
-                // start out largest index at parent index
-                largestIndex = index;
+                // start out smallest index at parent index
+                smallestIndex = index;
 
-            // if the left child > parent
-            if (this.values[leftChildIndex] > this.values[largestIndex]) {
-                // reassign largest index to left child index
-                largestIndex = leftChildIndex;
+            // if the left child < parent
+            if (this.values[leftChildIndex]?.priority < this.values[smallestIndex]?.priority) {
+                // reassign smallest index to left child index
+                smallestIndex = leftChildIndex;
             }
 
-            // if the right child > element at largest index (either parent or left child)
-            if (this.values[rightChildIndex] >= this.values[largestIndex]) {
-                // reassign largest index to right child index
-                largestIndex = rightChildIndex;
+            // if the right child < element at smallest index (either parent or left child)
+            if (this.values[rightChildIndex]?.priority <= this.values[smallestIndex]?.priority) {
+                // reassign smallest index to right child index
+                smallestIndex = rightChildIndex;
             }
 
-            // if the largest index is not the parent index
-            if (largestIndex !== index) {
+            // if the smallest index is not the parent index
+            if (smallestIndex !== index) {
                 // swap
-                this.swap(index, largestIndex);
+                this.swap(index, smallestIndex);
                 // recursively move down the heap
-                this.heapifyDown(largestIndex);
+                this.heapifyDown(smallestIndex);
             }
         }
     }
@@ -90,7 +92,7 @@ class MaxHeap {
             parentIndex = this.parent(currentIndex);
 
         // while we haven't reached the root node and the current element is greater than its parent node
-        while (currentIndex > 0 && this.values[currentIndex] > this.values[parentIndex]) {
+        while (currentIndex > 0 && this.values[currentIndex]?.priority < this.values[parentIndex]?.priority) {
             // swap
             this.swap(currentIndex, parentIndex);
             // move up the binary heap
@@ -99,32 +101,30 @@ class MaxHeap {
         }
     }
 
-    add(element) {
+    enqueu(value, priority) {
         // add element to the end of the heap
-        this.values.push(element);
+        this.values.push({value, priority});
         // move element up until it's in the correct position
         this.heapifyUp(this.values.length - 1);
     }
 
-    // returns value of max without removing
-    peek() {
-        return this.values[0];
-    }
-
     // removes and returns max element
-    extractMax() {
-        if (this.values.length < 1) return 'heap is empty';
+    dequeue() {
+        if (this.values.length < 1) return 'empty queue';
 
-        // get max and last element
-        const max = this.values[0];
+        // get min
+        const min = this.values[0];
         const end = this.values.pop();
-        // reassign first element to the last element
-        this.values[0] = end;
-        // heapify down until element is back in its correct position
-        this.heapifyDown(0);
+
+        if (this.values.length > 0) {
+            // reassign first element to the last element
+            this.values[0] = end;
+            // heapify down until element is back in its correct position
+            this.heapifyDown(0);
+        }
 
         // return the max
-        return max;
+        return min;
     }
 
     buildHeap(array) {
@@ -133,15 +133,5 @@ class MaxHeap {
         for(let i = Math.floor(this.values.length / 2); i >= 0; i--){
             this.heapifyDown(i);
         }
-    }
-
-    print() {
-        let i = 0;
-        while (!this.isLeaf(i)) {
-            console.log("PARENT:", this.values[i]);
-            console.log("LEFT CHILD:", this.values[this.leftChild(i)]);
-            console.log("RIGHT CHILD:", this.values[this.rightChild(i)]);
-            i++;
-        }      
     }
 }
