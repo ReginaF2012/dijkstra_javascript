@@ -20,7 +20,7 @@ class Graph {
     dijkstra(source) {
         let distances = {},
             parents = {},
-            visited = {};
+            visited = new Set();
         for (let i = 0; i < this.vertices.length; i++) {
             if (this.vertices[i] === source) {
                 distances[source] = 0;
@@ -28,7 +28,6 @@ class Graph {
                 distances[this.vertices[i]] = Infinity;
             }
             parents[this.vertices[i]] = null;
-            visited[this.vertices[i]] = false;
         }
         
         let currVertex = this.vertexWithMinDistance(distances, visited);
@@ -43,11 +42,12 @@ class Graph {
                     parents[neighbor] = currVertex;
                 }
             }
-            visited[currVertex] = true;
+            visited.add(currVertex);
             currVertex = this.vertexWithMinDistance(distances, visited);
         }
 
         console.log(parents);
+        console.log(distances);
     }
 
     vertexWithMinDistance(distances, visited) {
@@ -55,7 +55,7 @@ class Graph {
             minVertex = null;
         for (let vertex in distances) {
             let distance = distances[vertex];
-            if (distance < minDistance && !visited[vertex]) {
+            if (distance < minDistance && !visited.has(vertex)) {
                 minDistance = distance;
                 minVertex = vertex;
             }
