@@ -19,16 +19,15 @@ class Graph {
 
     dijkstra(source) {
         let distances = {},
-            paths = {},
+            parents = {},
             visited = {};
         for (let i = 0; i < this.vertices.length; i++) {
             if (this.vertices[i] === source) {
                 distances[source] = 0;
-                paths[this.vertices[i]] = 'source';
             } else {
                 distances[this.vertices[i]] = Infinity;
-                paths[this.vertices[i]] = source;
             }
+            parents[this.vertices[i]] = null;
             visited[this.vertices[i]] = false;
         }
         
@@ -41,15 +40,14 @@ class Graph {
                 let newDistance = distance + neighbors[neighbor];
                 if (distances[neighbor] > newDistance) {
                     distances[neighbor] = newDistance;
-                    paths[neighbor] = currVertex;
+                    parents[neighbor] = currVertex;
                 }
             }
             visited[currVertex] = true;
             currVertex = this.vertexWithMinDistance(distances, visited);
         }
 
-        console.log(distances);
-        console.log(paths);
+        console.log(parents);
     }
 
     vertexWithMinDistance(distances, visited) {
